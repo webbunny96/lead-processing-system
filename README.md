@@ -1,3 +1,12 @@
+---
+title: Lead Processing System
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # Lead Processing System
 
 Monorepo with two FastAPI microservices:

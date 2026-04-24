@@ -86,7 +86,20 @@ def sync_files() -> int:
 
 
 def run_git_command(args: list[str]) -> None:
-    subprocess.run(args, cwd=DEPLOY_DIR, check=True)
+    try:
+        subprocess.run(args, cwd=DEPLOY_DIR, check=True, text=True, capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        stderr = (exc.stderr or "").strip()
+        if "detected dubious ownership" in stderr:
+            safe_path = DEPLOY_DIR.as_posix()
+            raise RuntimeError(
+                "Git blocked access to huggingface-deploy due to ownership checks.\n"
+                f"Run this once and retry deploy:\n"
+                f"git config --global --add safe.directory {safe_path}"
+            ) from exc
+        raise RuntimeError(
+            f"Git command failed: {' '.join(args)}\n{stderr or exc}"
+        ) from exc
 
 
 def commit_and_push(message: str) -> None:
@@ -120,11 +133,15 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    synced_count = sync_files()
-    print(f"Synced {synced_count} files to {DEPLOY_DIR}.")
+    try:
+        synced_count = sync_files()
+        print(f"Synced {synced_count} files to {DEPLOY_DIR}.")
 
-    commit_and_push(args.message)
-    print("Deploy sync complete.")
+        commit_and_push(args.message)
+        print("Deploy sync complete.")
+    except RuntimeError as exc:
+        print(f"ERROR: {exc}")
+        raise SystemExit(1) from exc
 
 
 if __name__ == "__main__":
