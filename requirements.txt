@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+asyncpg
+alembic
+redis
+python-dotenv
+python-jose[cryptography]
+pydantic
