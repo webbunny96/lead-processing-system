@@ -11,7 +11,12 @@ if not DATABASE_URL:
 
 # Створюємо асинхронний двигун (Engine)
 # За ТЗ використовуємо asyncpg
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,
+    # Supabase transaction pooler (PgBouncer) requires disabled statement cache.
+    connect_args={"statement_cache_size": 0},
+)
 
 # Фабрика сесій для роботи з базою
 async_session_local = async_sessionmaker(
