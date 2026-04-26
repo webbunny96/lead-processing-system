@@ -31,3 +31,4 @@ dist/
 build/
 *.log
 huggingface-deploy/
+huggingface-deploy-core/

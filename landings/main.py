@@ -10,7 +10,16 @@ except ModuleNotFoundError:
 
 logger = logging.getLogger("landings.startup")
 
-app = FastAPI(title="Landings Service")
+app = FastAPI(
+    title="Lead Processing System - Landings API",
+    summary="Lead intake API with JWT authorization and queue publishing.",
+    description=(
+        "Landings service accepts incoming leads from partners, validates JWT bearer token "
+        "and business rules, and pushes valid leads to Redis queue for core processing."
+    ),
+    version="1.0.0",
+    contact={"name": "Lead Processing Team"},
+)
 app.include_router(router)
 
 

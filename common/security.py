@@ -2,7 +2,8 @@ import os
 from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +15,7 @@ load_dotenv()
 
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def _extract_bearer_token(authorization: str | None) -> str:
@@ -23,6 +25,12 @@ def _extract_bearer_token(authorization: str | None) -> str:
     if len(parts) != 2 or parts[0].lower() != "bearer":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authorization scheme")
     return parts[1]
+
+
+def _extract_token_from_credentials(credentials: HTTPAuthorizationCredentials | None) -> str:
+    if credentials is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing Authorization header")
+    return _extract_bearer_token(f"{credentials.scheme} {credentials.credentials}")
 
 
 def decode_token(token: str) -> dict[str, Any]:
@@ -47,8 +55,8 @@ async def verify_token(token: str, db: AsyncSession) -> Affiliate:
 
 
 async def get_current_affiliate(
-    authorization: str | None = Header(default=None),
+    credentials: HTTPAuthorizationCredentials | None = Security(bearer_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> Affiliate:
-    token = _extract_bearer_token(authorization)
+    token = _extract_token_from_credentials(credentials)
     return await verify_token(token, db)

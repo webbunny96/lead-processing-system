@@ -30,5 +30,15 @@ async def lifespan(_app: FastAPI):
         await task
 
 
-app = FastAPI(title="Core Service", lifespan=lifespan)
+app = FastAPI(
+    title="Lead Processing System - Core API",
+    summary="Lead analytics API and background deduplication worker.",
+    description=(
+        "Core service runs background lead consumer, deduplicates messages, persists leads in PostgreSQL "
+        "and provides analytics endpoints for authenticated affiliates."
+    ),
+    version="1.0.0",
+    contact={"name": "Lead Processing Team"},
+    lifespan=lifespan,
+)
 app.include_router(router)

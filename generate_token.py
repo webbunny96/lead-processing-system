@@ -1,6 +1,10 @@
 import os
 from datetime import datetime, timedelta
+
+from dotenv import load_dotenv
 from jose import jwt
+
+load_dotenv()
 
 SECRET_KEY = os.getenv("JWT_SECRET", "dev-secret")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
