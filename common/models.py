@@ -38,6 +38,7 @@ class Lead(Base):
     offer_id: Mapped[int] = mapped_column(ForeignKey("offers.id"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     phone: Mapped[str] = mapped_column(String(50), nullable=False)
+    country: Mapped[str] = mapped_column(String(2), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     affiliate: Mapped["Affiliate"] = relationship("Affiliate", back_populates="leads")

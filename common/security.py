@@ -35,9 +35,9 @@ def decode_token(token: str) -> dict[str, Any]:
 
 async def verify_token(token: str, db: AsyncSession) -> Affiliate:
     payload = decode_token(token)
-    affiliate_id = payload.get("affiliate_id")
+    affiliate_id = payload.get("id")
     if affiliate_id is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token payload missing affiliate_id")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token payload missing id")
 
     result = await db.execute(select(Affiliate).where(Affiliate.id == int(affiliate_id)))
     affiliate = result.scalar_one_or_none()

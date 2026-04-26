@@ -36,6 +36,7 @@ async def process_message(raw_payload: str) -> None:
             offer_id=data.offer_id,
             name=data.name,
             phone=data.phone,
+            country=data.country,
         )
         session.add(lead)
         await session.commit()

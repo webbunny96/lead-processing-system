@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,14 +18,14 @@ async def create_lead(
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
     if lead.affiliate_id != affiliate.id:
-        return {"status": "ignored", "reason": "affiliate_id does not match token"}
+        raise HTTPException(status_code=403, detail="affiliate_id does not match token")
 
     offer_result = await db.execute(
         select(Offer).where(Offer.id == lead.offer_id, Offer.affiliate_id == lead.affiliate_id)
     )
     offer = offer_result.scalar_one_or_none()
     if offer is None:
-        return {"status": "ignored", "reason": "offer is not available for affiliate"}
+        raise HTTPException(status_code=404, detail="offer is not available for affiliate")
 
     message = LeadQueueMessage(**lead.model_dump()).model_dump_json()
     await enqueue_lead(message)
