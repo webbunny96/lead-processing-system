@@ -241,6 +241,44 @@ python generate_token.py
 - У таблиці `offers` додано поле `affiliate_id` (додатковий зв'язок оффера з афіліатом), щоб явно валідувати доступність оффера для конкретного affiliate.
 - У таблиці `affiliates` є поле `token_sub` (додатковий технічний атрибут), що не конфліктує з вимогами ТЗ.
 
-## Статус тестів
+## Тести
 
-Юніт-тести у репозиторії поки не додані.
+У репозиторії додані:
+
+- юніт-тести для ключової бізнес-логіки (`security`, `landings`, `core`, `worker`, `deduplication`);
+- live/smoke тести розгорнутих сервісів (позначені маркером `live`).
+
+### 1) Встановлення залежностей для тестів
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+```
+
+### 2) Запуск юніт-тестів (типовий режим)
+
+```bash
+python -m pytest -q
+```
+
+За замовчуванням live-тести зовнішніх сервісів не запускаються.
+
+### 3) Запуск live-тестів розгорнутих сервісів
+
+```bash
+python -m pytest -q --run-live -m live
+```
+
+Live-тести використовують такі змінні середовища:
+
+```env
+LIVE_LANDINGS_BASE_URL=https://webbuuny-lead-processing-system.hf.space
+LIVE_CORE_BASE_URL=https://webbuuny-lead-processing-system-core.hf.space
+LIVE_AUTH_BEARER_TOKEN=your_jwt_token
+LIVE_AFFILIATE_ID=1
+LIVE_OFFER_ID=1
+```
+
+Примітки:
+
+- якщо `LIVE_AUTH_BEARER_TOKEN` не вказано, live-тести перевіряють, що сервіси коректно вимагають авторизацію;
+- для сценаріїв зі статусом `200` потрібні валідний токен і актуальні `affiliate/offer` дані у прод-середовищі.
