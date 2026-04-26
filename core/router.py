@@ -33,9 +33,21 @@ router = APIRouter(tags=["Leads analytics"])
     },
 )
 async def get_leads_analytics(
-    date_from: dt_date = Query(..., description="Start date, inclusive (YYYY-MM-DD).", example="2026-04-01"),
-    date_to: dt_date = Query(..., description="End date, inclusive (YYYY-MM-DD).", example="2026-04-30"),
-    group: Literal["date", "offer"] = Query(..., description="Aggregation mode.", example="date"),
+    date_from: dt_date = Query(
+        ...,
+        description="Start date, inclusive (YYYY-MM-DD).",
+        examples=["2026-04-01"],
+    ),
+    date_to: dt_date = Query(
+        ...,
+        description="End date, inclusive (YYYY-MM-DD).",
+        examples=["2026-04-30"],
+    ),
+    group: Literal["date", "offer"] = Query(
+        ...,
+        description="Aggregation mode.",
+        examples=["date"],
+    ),
     affiliate: Affiliate = Depends(get_current_affiliate),
     db: AsyncSession = Depends(get_db),
 ) -> list[LeadGroupByDate | LeadGroupByOffer]:
