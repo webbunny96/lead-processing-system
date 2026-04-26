@@ -1,4 +1,11 @@
-
+---
+title: Lead Processing System
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
 # Lead Processing System
 
 Бекенд-система для прийому та обробки лідів, реалізована як 2 незалежні FastAPI мікросервіси в одному репозиторії:
